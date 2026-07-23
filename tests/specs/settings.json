@@ -1,0 +1,20 @@
+[
+  {
+    "name": "/settings",
+    "steps": [
+      {
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Configure digest timing and notification preferences"
+            }
+          }
+        ],
+        "send": {
+          "text": "/settings"
+        }
+      }
+    ]
+  }
+]
