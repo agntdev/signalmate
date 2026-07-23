@@ -1,19 +1,88 @@
 [
   {
-    "name": "/settings",
+    "name": "/settings shows preferences for subscriber",
     "steps": [
       {
+        "send": { "text": "/start", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "text": "/settings", "chatId": 1, "userId": 1 },
         "expect": [
           {
             "method": "sendMessage",
             "payload": {
-              "text": "Configure digest timing and notification preferences"
+              "text": "Your preferences\n\nDigest time: 18:00 (UTC)\nLive alerts: on\n\nChoose what to change:"
             }
           }
-        ],
-        "send": {
-          "text": "/settings"
-        }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "settings digest time and mute persist",
+    "steps": [
+      {
+        "send": { "text": "/start", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "set:main", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "editMessageText" }]
+      },
+      {
+        "send": { "callback": "set:time:09:00", "chatId": 1, "userId": 1 },
+        "expect": [
+          { "method": "answerCallbackQuery" },
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "Digest time set to 09:00 (UTC).\n\nYour preferences\n\nDigest time: 09:00 (UTC)\nLive alerts: on\n\nChoose what to change:"
+            }
+          }
+        ]
+      },
+      {
+        "send": { "callback": "set:mute:on", "chatId": 1, "userId": 1 },
+        "expect": [
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "Live alerts muted. Digests still arrive.\n\nYour preferences\n\nDigest time: 09:00 (UTC)\nLive alerts: muted\n\nChoose what to change:"
+            }
+          }
+        ]
+      },
+      {
+        "send": { "text": "/settings", "chatId": 1, "userId": 1 },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Your preferences\n\nDigest time: 09:00 (UTC)\nLive alerts: muted\n\nChoose what to change:"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "non-subscriber cannot open settings",
+    "steps": [
+      {
+        "send": { "text": "/start", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "text": "/settings", "chatId": 50, "userId": 50 },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "You need an invite to use this bot. Open a link from the owner, or tap Enter code."
+            }
+          }
+        ]
       }
     ]
   }

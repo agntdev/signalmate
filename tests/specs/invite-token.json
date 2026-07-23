@@ -1,19 +1,132 @@
 [
   {
-    "name": "Invite Link",
+    "name": "invite deep-link onboards a new subscriber",
     "steps": [
       {
+        "send": { "text": "/start", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "admin:inv_create:single", "chatId": 1, "userId": 1 },
+        "expect": [
+          { "method": "answerCallbackQuery" },
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "Invite created (single-use).\n\nCode: inv1\nLink: https://t.me/test_bot?start=invite_inv1\n\nShare the link or code with the subscriber."
+            }
+          }
+        ]
+      },
+      {
+        "send": { "text": "/start invite_inv1", "chatId": 2, "userId": 2 },
         "expect": [
           {
             "method": "sendMessage",
             "payload": {
-              "text": "User clicks invite link to join the service"
+              "text": "You're in. Welcome to private trading signals.\n\nYou'll get live alerts here and a daily digest at 18:00 local time (change that in Settings).\n\nSignals are suggestions only — not financial advice. You decide what to trade."
             }
           }
-        ],
-        "send": {
-          "text": "/invite:\u003ctoken\u003e"
-        }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "invalid invite is rejected",
+    "steps": [
+      {
+        "send": { "text": "/start invite_nope", "chatId": 5, "userId": 5 },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "That invite link isn't valid or has already been used. Ask the owner for a fresh one."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "typed join code onboards via Enter code",
+    "steps": [
+      {
+        "send": { "text": "/start", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "admin:inv_create:multi", "chatId": 1, "userId": 1 },
+        "expect": [
+          { "method": "answerCallbackQuery" },
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "Invite created (reusable).\n\nCode: inv1\nLink: https://t.me/test_bot?start=invite_inv1\n\nShare the link or code with the subscriber."
+            }
+          }
+        ]
+      },
+      {
+        "send": { "text": "/start", "chatId": 7, "userId": 7 },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "This bot is invite-only.\n\nOpen a link from the owner, or tap Enter code if you have a join code."
+            }
+          }
+        ]
+      },
+      {
+        "send": { "callback": "invite:code", "chatId": 7, "userId": 7 },
+        "expect": [
+          { "method": "answerCallbackQuery" },
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "Send your invite code as a message.\n\nTap Cancel to go back."
+            }
+          }
+        ]
+      },
+      {
+        "send": { "text": "inv1", "chatId": 7, "userId": 7 },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "You're in. Welcome to private trading signals.\n\nYou'll get live alerts here and a daily digest at 18:00 local time (change that in Settings).\n\nSignals are suggestions only — not financial advice. You decide what to trade."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "single-use invite cannot be reused",
+    "steps": [
+      {
+        "send": { "text": "/start", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "admin:inv_create:single", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "editMessageText" }]
+      },
+      {
+        "send": { "text": "/start invite_inv1", "chatId": 2, "userId": 2 },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "text": "/start invite_inv1", "chatId": 3, "userId": 3 },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "That invite link isn't valid or has already been used. Ask the owner for a fresh one."
+            }
+          }
+        ]
       }
     ]
   }
