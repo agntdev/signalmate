@@ -1,0 +1,215 @@
+[
+  {
+    "name": "live signal delivery reaches multiple subscribers",
+    "steps": [
+      {
+        "send": { "text": "/start", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "admin:inv_create:multi", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "editMessageText" }]
+      },
+      {
+        "send": { "text": "/start invite_inv1", "chatId": 2, "userId": 2 },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "text": "/start invite_inv1", "chatId": 3, "userId": 3 },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "admin:signal", "chatId": 1, "userId": 1 },
+        "expect": [
+          { "method": "answerCallbackQuery" },
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "New signal — send the asset symbol (e.g. BTC, EURUSD)."
+            }
+          }
+        ]
+      },
+      {
+        "send": { "text": "ETH", "chatId": 1, "userId": 1 },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Asset: ETH.\n\nChoose the action:"
+            }
+          }
+        ]
+      },
+      {
+        "send": { "callback": "admin:sig_action:sell", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "editMessageText" }]
+      },
+      {
+        "send": { "text": "3200", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "text": "70", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "admin:sig_skip_notes", "chatId": 1, "userId": 1 },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "SELL ETH\nPrice: 3200\nConfidence: 70%\nSource: owner\nID: sig1"
+            }
+          },
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "SELL ETH\nPrice: 3200\nConfidence: 70%\nSource: owner\nID: sig1"
+            }
+          },
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "SELL ETH\nPrice: 3200\nConfidence: 70%\nSource: owner\nID: sig1"
+            }
+          },
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "Signal sig1 published: SELL ETH. Active subscribers notified.\n\nSELL ETH\nPrice: 3200\nConfidence: 70%\nSource: owner\nID: sig1"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "force digest compiles and delivers",
+    "steps": [
+      {
+        "send": { "text": "/start", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "admin:inv_create:multi", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "editMessageText" }]
+      },
+      {
+        "send": { "text": "/start invite_inv1", "chatId": 2, "userId": 2 },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "admin:signal", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "editMessageText" }]
+      },
+      {
+        "send": { "text": "AAPL", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "admin:sig_action:buy", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "editMessageText" }]
+      },
+      {
+        "send": { "text": "190", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "text": "60", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "admin:sig_skip_notes", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "editMessageText" }]
+      },
+      {
+        "send": { "callback": "admin:digest", "chatId": 1, "userId": 1 },
+        "expect": [
+          { "method": "answerCallbackQuery" },
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "Digest sent: 1 signal(s) to 2 subscriber(s)."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "stats shows subscriber counts",
+    "steps": [
+      {
+        "send": { "text": "/start", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "admin:stats", "chatId": 1, "userId": 1 },
+        "expect": [
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "Subscriber stats\n\nActive subscribers: 1\nInvite links: 0\nSignals published: 0"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "maintenance blocks live broadcast",
+    "steps": [
+      {
+        "send": { "text": "/start", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "admin:maint", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "editMessageText" }]
+      },
+      {
+        "send": { "callback": "admin:maint:toggle", "chatId": 1, "userId": 1 },
+        "expect": [
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "Maintenance is now ON."
+            }
+          }
+        ]
+      },
+      {
+        "send": { "callback": "admin:signal", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "editMessageText" }]
+      },
+      {
+        "send": { "text": "XAU", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "admin:sig_action:buy", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "editMessageText" }]
+      },
+      {
+        "send": { "text": "2300", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "text": "55", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "admin:sig_skip_notes", "chatId": 1, "userId": 1 },
+        "expect": [
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "Signal sig1 saved (BUY XAU) but not broadcast — maintenance is on.\n\nBUY XAU\nPrice: 2300\nConfidence: 55%\nSource: owner\nID: sig1"
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

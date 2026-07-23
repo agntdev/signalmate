@@ -1,19 +1,73 @@
 [
   {
-    "name": "/links",
+    "name": "/links empty for owner with no invites",
     "steps": [
       {
+        "send": { "text": "/start", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "text": "/links", "chatId": 1, "userId": 1 },
         "expect": [
           {
             "method": "sendMessage",
             "payload": {
-              "text": "Show invite status and link history"
+              "text": "No invite links yet — tap Create invite to make one."
             }
           }
-        ],
-        "send": {
-          "text": "/links"
-        }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "/links shows created invites for owner",
+    "steps": [
+      {
+        "send": { "text": "/start", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "admin:inv_create:single", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "editMessageText" }]
+      },
+      {
+        "send": { "text": "/links", "chatId": 1, "userId": 1 },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Invite links\n\n• inv1 — single-use, active\n\nShare: t.me/test_bot?start=invite_<token>"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "subscriber links shows access status",
+    "steps": [
+      {
+        "send": { "text": "/start", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "admin:inv_create:single", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "editMessageText" }]
+      },
+      {
+        "send": { "text": "/start invite_inv1", "chatId": 2, "userId": 2 },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "text": "/links", "chatId": 2, "userId": 2 },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Your access: active\nJoined via invite inv1."
+            }
+          }
+        ]
       }
     ]
   }

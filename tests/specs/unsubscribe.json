@@ -1,19 +1,79 @@
 [
   {
-    "name": "/unsubscribe",
+    "name": "/unsubscribe confirms and deletes account",
     "steps": [
       {
+        "send": { "text": "/start", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "text": "/unsubscribe", "chatId": 1, "userId": 1 },
         "expect": [
           {
             "method": "sendMessage",
             "payload": {
-              "text": "Cancel subscription and delete account"
+              "text": "Unsubscribe and delete your account?\n\nYou'll stop receiving signals. You can rejoin later with a new invite."
             }
           }
-        ],
-        "send": {
-          "text": "/unsubscribe"
-        }
+        ]
+      },
+      {
+        "send": { "callback": "unsub:yes", "chatId": 1, "userId": 1 },
+        "expect": [
+          { "method": "answerCallbackQuery" },
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "You're unsubscribed and your account is removed. Take care."
+            }
+          }
+        ]
+      },
+      {
+        "send": { "text": "/history", "chatId": 1, "userId": 1 },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "You need an invite to use this bot. Open a link from the owner, or tap Enter code."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "unsubscribe cancel keeps subscription",
+    "steps": [
+      {
+        "send": { "text": "/start", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "unsub:ask", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "editMessageText" }]
+      },
+      {
+        "send": { "callback": "unsub:no", "chatId": 1, "userId": 1 },
+        "expect": [
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "Subscription kept. Open /start for the menu."
+            }
+          }
+        ]
+      },
+      {
+        "send": { "text": "/settings", "chatId": 1, "userId": 1 },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Your preferences\n\nDigest time: 18:00 (UTC)\nLive alerts: on\n\nChoose what to change:"
+            }
+          }
+        ]
       }
     ]
   }

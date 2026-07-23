@@ -1,13 +1,56 @@
 [
   {
-    "name": "/start replies with the welcome + main menu",
+    "name": "/start bootstraps owner and shows owner console",
     "steps": [
       {
         "send": { "text": "/start" },
         "expect": [
           {
             "method": "sendMessage",
-            "payload": { "text": "👋 Welcome! Tap a button below to get started." }
+            "payload": {
+              "text": "Owner console ready.\n\nCreate signals, manage invites, and review subscribers from the menu."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Back to menu returns owner console",
+    "steps": [
+      {
+        "send": { "text": "/start" },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "menu:main" },
+        "expect": [
+          { "method": "answerCallbackQuery" },
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "Owner console ready.\n\nCreate signals, manage invites, and review subscribers from the menu."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "stranger without invite sees invite-only message",
+    "steps": [
+      {
+        "send": { "text": "/start", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "text": "/start", "chatId": 99, "userId": 99 },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "This bot is invite-only.\n\nOpen a link from the owner, or tap Enter code if you have a join code."
+            }
           }
         ]
       }

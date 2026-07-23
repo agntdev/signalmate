@@ -1,19 +1,76 @@
 [
   {
-    "name": "/history",
+    "name": "/history empty state for subscriber",
     "steps": [
       {
+        "send": { "text": "/start", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "text": "/history", "chatId": 1, "userId": 1 },
         "expect": [
           {
             "method": "sendMessage",
             "payload": {
-              "text": "View recent trading signals"
+              "text": "No signals yet — check back after the next one is published."
             }
           }
-        ],
-        "send": {
-          "text": "/history"
-        }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "history lists signal and opens detail",
+    "steps": [
+      {
+        "send": { "text": "/start", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "admin:signal", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "editMessageText" }]
+      },
+      {
+        "send": { "text": "BTC", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "admin:sig_action:buy", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "editMessageText" }]
+      },
+      {
+        "send": { "text": "64000", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "text": "80", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "admin:sig_skip_notes", "chatId": 1, "userId": 1 },
+        "expect": [{ "method": "editMessageText" }]
+      },
+      {
+        "send": { "text": "/history", "chatId": 1, "userId": 1 },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Recent signals\n\n1. BUY BTC @ 64000 (80%)\n\nTap a signal ID for details."
+            }
+          }
+        ]
+      },
+      {
+        "send": { "callback": "hist:view:sig1", "chatId": 1, "userId": 1 },
+        "expect": [
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "BUY BTC\nPrice: 64000\nConfidence: 80%\nSource: owner\nID: sig1"
+            }
+          }
+        ]
       }
     ]
   }
