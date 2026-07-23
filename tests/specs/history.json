@@ -1,0 +1,20 @@
+[
+  {
+    "name": "/history",
+    "steps": [
+      {
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "View recent trading signals"
+            }
+          }
+        ],
+        "send": {
+          "text": "/history"
+        }
+      }
+    ]
+  }
+]
